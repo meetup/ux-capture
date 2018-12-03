@@ -46,6 +46,24 @@ const UXCapture = {
 		_onMark = config.onMark || NOOP;
 		_onMeasure = config.onMeasure || NOOP;
 		_startMarkName = NAVIGATION_START_MARK_NAME;
+
+		if (config.useBrowserHistory) {
+			window.onpopstate = function(event) {
+				UXCapture.startTransition();
+			};
+
+			const pushState = window.history.pushState;
+			window.history.pushState = (...args) => {
+				UXCapture.startTransition();
+				return pushState.apply(window.history, args);
+			};
+
+			const replaceState = window.history.replaceState;
+			window.history.replaceState = (...args) => {
+				UXCapture.startTransition();
+				return replaceState.apply(window.history, args);
+			};
+		}
 	},
 
 	/**
