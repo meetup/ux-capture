@@ -32,7 +32,6 @@ View.prototype.createZone = function(zoneConfig) {
 	return new Zone(
 		Object.assign(
 			{
-				onMeasure: this.props.onMeasure,
 				startMarkName: this.props.startMarkName,
 			},
 			zoneConfig

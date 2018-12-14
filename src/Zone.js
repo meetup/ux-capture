@@ -9,7 +9,6 @@ import ExpectedMark from './ExpectedMark';
  * {
  *  name: "ux-destination-verified",
  *  marks: ["ux-image-online-logo", "ux-image-inline-logo"]
- *  onMeasure: measureName => {},
  * }
  */
 function Zone(props) {
@@ -30,7 +29,7 @@ Zone.prototype.measure = function(endMarkName) {
 		return;
 	}
 
-	const { name, startMarkName, onMeasure } = this.props;
+	const { name, startMarkName } = this.props;
 	if (
 		typeof window.performance !== 'undefined' &&
 		typeof window.performance.measure !== 'undefined'
@@ -46,7 +45,7 @@ Zone.prototype.measure = function(endMarkName) {
 	}
 
 	this.measured = true;
-	onMeasure(name);
+	Zone.onMeasure(name);
 };
 
 Zone.prototype.destroy = function() {

@@ -1,4 +1,5 @@
 import ExpectedMark from './ExpectedMark';
+import Zone from './Zone';
 import View from './View';
 
 const NOOP = () => {};
@@ -17,7 +18,6 @@ const INTERACTIVE_TRANSITION_START_MARK_NAME = 'transitionStart';
 export const VIEW_OVERRIDE_ERROR_MESSAGE =
 	'[UX Capture] Application should call UXCapture.startTransition() before starting new view';
 
-let _onMeasure;
 let _view;
 let _startMarkName = NAVIGATION_START_MARK_NAME;
 
@@ -43,7 +43,7 @@ const UXCapture = {
 	 */
 	create: config => {
 		ExpectedMark.onMark = config.onMark || NOOP;
-		_onMeasure = config.onMeasure || NOOP;
+		Zone.onMeasure = config.onMeasure || NOOP;
 		_startMarkName = NAVIGATION_START_MARK_NAME;
 	},
 
@@ -53,7 +53,7 @@ const UXCapture = {
 	 */
 	destroy: () => {
 		ExpectedMark.onMark = undefined;
-		_onMeasure = undefined;
+		Zone.onMeasure = undefined;
 		_startMarkName = undefined;
 		UXCapture.clearMarks();
 		if (_view) {
@@ -73,7 +73,6 @@ const UXCapture = {
 		}
 
 		_view = new View({
-			onMeasure: _onMeasure,
 			startMarkName: _startMarkName,
 			zoneConfigs,
 		});
