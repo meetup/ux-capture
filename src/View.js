@@ -16,7 +16,7 @@ function View(props) {
 // to exisiting zones or new zones or both
 View.prototype.update = function(zoneConfigs) {
 	// Append new zones to existing config
-	this.expectedZones.concat(this.setZones(zoneConfigs));
+	this.expectedZones.push.apply(this.expectedZones, this.setZones(zoneConfigs));
 };
 
 View.prototype.setZones = function(zoneConfigs) {
@@ -32,7 +32,6 @@ View.prototype.createZone = function(zoneConfig) {
 	return new Zone(
 		Object.assign(
 			{
-				onMark: this.props.onMark,
 				onMeasure: this.props.onMeasure,
 				startMarkName: this.props.startMarkName,
 			},

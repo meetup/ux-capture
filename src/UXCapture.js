@@ -17,7 +17,6 @@ const INTERACTIVE_TRANSITION_START_MARK_NAME = 'transitionStart';
 export const VIEW_OVERRIDE_ERROR_MESSAGE =
 	'[UX Capture] Application should call UXCapture.startTransition() before starting new view';
 
-let _onMark;
 let _onMeasure;
 let _view;
 let _startMarkName = NAVIGATION_START_MARK_NAME;
@@ -43,7 +42,7 @@ const UXCapture = {
 	 * @param {object} config
 	 */
 	create: config => {
-		_onMark = config.onMark || NOOP;
+		ExpectedMark.onMark = config.onMark || NOOP;
 		_onMeasure = config.onMeasure || NOOP;
 		_startMarkName = NAVIGATION_START_MARK_NAME;
 	},
@@ -53,7 +52,7 @@ const UXCapture = {
 	 * memory
 	 */
 	destroy: () => {
-		_onMark = undefined;
+		ExpectedMark.onMark = undefined;
 		_onMeasure = undefined;
 		_startMarkName = undefined;
 		UXCapture.clearMarks();
@@ -74,7 +73,6 @@ const UXCapture = {
 		}
 
 		_view = new View({
-			onMark: _onMark,
 			onMeasure: _onMeasure,
 			startMarkName: _startMarkName,
 			zoneConfigs,

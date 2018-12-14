@@ -1,5 +1,6 @@
 // private map of { name: mark } for all expected marks
 let _expectedMarks = {};
+let _markSets = [];
 
 /**
  * Class describes expected marks
@@ -7,8 +8,6 @@ let _expectedMarks = {};
  */
 function ExpectedMark(props) {
 	this.props = props;
-	// list of zone callbacks to call on completion
-	this.onMarkListeners = [];
 	// 'state' of the mark that indicates whether it has been recorded
 	this.marked = false;
 	this._mark = this._mark.bind(this);
@@ -53,11 +52,6 @@ ExpectedMark.destroy = function(name) {
 	_expectedMarks = {};
 };
 
-// registers zone callback
-ExpectedMark.prototype.onComplete = function(onMark) {
-	this.onMarkListeners.push(onMark);
-};
-
 /**
  * This method tries to approximate full rendering lifecycle in the browser
  * rather than just measuring JS execution like render() method does.
@@ -91,20 +85,27 @@ ExpectedMark.prototype._mark = function() {
 		window.console.timeStamp(this.props.name);
 	}
 	this.marked = true;
-
-	// call all registered zone callbacks
-	this.onMarkListeners.forEach(listener => listener(this));
+	ExpectedMark.onMark(this.props.name);
+	ExpectedMark.testMarkSets(this.props.name);
+};
+ExpectedMark.testMarkSets = function(endMarkName) {
+	const marked = Object.keys(_expectedMarks).filter(
+		name => _expectedMarks[name].marked
+	);
+	_markSets.forEach(({ markSet, onComplete }) => {
+		if (markSet.every(m => marked.includes(m))) {
+			onComplete(endMarkName);
+		}
+	});
 };
 
 // registers zone callback
-ExpectedMark.prototype.addOnMarkListener = function(onMark) {
-	this.onMarkListeners.push(onMark);
+ExpectedMark.addMarkSet = function(markSet, onComplete) {
+	_markSets.push({ markSet, onComplete });
 };
 
-ExpectedMark.prototype.removeOnMarkListener = function(listenerToRemove) {
-	this.onMarkListeners = this.onMarkListeners.filter(
-		listener => listener !== listenerToRemove
-	);
+ExpectedMark.removeMarkSet = function(markSet) {
+	_markSets = _markSets.filter(({ markSet }) => markSet !== markSet);
 };
 
 export default ExpectedMark;

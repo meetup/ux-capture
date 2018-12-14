@@ -10,37 +10,19 @@ import ExpectedMark from './ExpectedMark';
  *  name: "ux-destination-verified",
  *  marks: ["ux-image-online-logo", "ux-image-inline-logo"]
  *  onMeasure: measureName => {},
- *  onMark: markName => {}
  * }
  */
 function Zone(props) {
 	this.props = props;
-	// Name used for UserTiming measures
-	this.measureName = this.props.name;
 
-	// Create a new `ExpectedMark` for each mark
-	this.marks = this.props.marks.map(markName => {
-		// 'state' of the measure that indicates whether it has been recorded
-		this.measured = false;
-		const mark = ExpectedMark.create(markName);
-
-		const listener = completeMark => {
-			// pass the event upstream
-			this.props.onMark(markName);
-			if (this.marks.every(({ marked }) => mark.marked)) {
-				this.measure(markName);
-			}
-		};
-		mark.addOnMarkListener(listener);
-
-		return { mark, listener };
-	});
+	// Tell ExpectedMark to check for completion of this set of mark names
+	ExpectedMark.addMarkSet(this.props.marks, this.measure.bind(this));
 }
 
 /**
  * Records measure on Performance Timeline and calls onMeasure callback
  *
- * @param {ExpectedMark} lastMark last mark that triggered completion
+ * @param {String} lastMark last mark that triggered completion
  */
 Zone.prototype.measure = function(endMarkName) {
 	if (this.measured) {
@@ -74,8 +56,8 @@ Zone.prototype.destroy = function() {
 	) {
 		window.performance.clearMeasures(this.props.name);
 	}
-	// don't destroy the ExpectedMarks, because they may outlive a View/Zone, just remove reference
-	this.marks.forEach(({ mark, listener }) => mark.removeOnMarkListener(listener));
+
+	ExpectedMark.removeMarkSet(this.props.marks);
 	this.marks = null;
 };
 
