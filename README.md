@@ -2,20 +2,22 @@
 
 Browser instrumentation approach and libraries that makes it easier to capture UX performance metrics.
 
--   [Packages](#packages)
-    -   [Publish workflow](#publish-workflow)
--   [Internal documentation](#internal-documentation)
--   [Project Goals](#project-goals)
--   [Instrumentation Approach](#instrumentation-approach)
-    -   [Individual Element Instrumentation](#individual-element-instrumentation)
-        -   [Image elements](#image-elements)
-        -   [Text without custom font](#text-without-custom-font)
-        -   [Text with custom font](#text-with-custom-font)
-        -   [Event handler attachment](#event-handler-attachment)
-    -   [Aggregating component metrics](#aggregating-component-metrics)
-    -   [Aggregating experience/perception phase metrics](#aggregating-experienceperception-phase-metrics)
--   [Testing results](#testing-results)
--   [Glossary](#glossary)
+- [UX Capture](#ux-capture)
+  - [Packages](#packages)
+    - [Publish workflow](#publish-workflow)
+  - [Additional documentation](#additional-documentation)
+  - [Project Goals](#project-goals)
+  - [Instrumentation Approach](#instrumentation-approach)
+    - [Individual Element Instrumentation](#individual-element-instrumentation)
+      - [Image elements](#image-elements)
+      - [Text without custom font](#text-without-custom-font)
+      - [Text with custom font](#text-with-custom-font)
+      - [Event handler attachment](#event-handler-attachment)
+    - [Aggregating component metrics](#aggregating-component-metrics)
+    - [Aggregating experience/perception phase metrics](#aggregating-experienceperception-phase-metrics)
+  - [Testing results](#testing-results)
+  - [UX Capture Lifecycle](#ux-capture-lifecycle)
+  - [Glossary](#glossary)
 
 ## Packages
 
@@ -40,12 +42,12 @@ The Travis deploy step will then publish _only updated packages_ when the PR
 merges. If you forget to bump a version, the deploy will fail and you will have
 to run `yarn make-version` to push the latest tags
 
-## Internal documentation
+## Additional documentation
 
-See [Meetup Confluence docs](https://meetup.atlassian.net/wiki/spaces/WEG/pages/718700545/UX+Capture)
-for more info.
-
-**@TODO: move all public documentation into this README**.
+-   [Progressive Enhancement Phases and Corresponding Zones](docs/progressive_enhancement_phases.md)
+-   [UX Capture JavaScript Library](ux-capture/packages/ux-capture/README.md)
+    -   [UX Capture Core Library API Spec and seqence diagram](docs/ux-capture-js-api-spec.md)
+-   [React bindings for UX Capture](packages/react-ux-capture/README.md)
 
 ---
 
@@ -208,10 +210,10 @@ task and giving them best experience in terms of percieved speed.
 Here are 4 phases defining parts of experience that matter to business from
 different perspectives:
 
-1.  Destination verified (`ux-destination-verified`)
-2.  Primary content displayed (`ux-primary-content-displayed`)
-3.  Primary action available (`ux-primary-action-available`)
-4.  Secondary content displayed (`ux-secondary-content-displayed`)
+1.  [Destination verified](docs/progressive_enhancement_phases.md#ux1-destination-verified) (`ux-destination-verified`)
+2.  [Primary content displayed](docs/progressive_enhancement_phases.md#ux2-primary-content-displayed) (`ux-primary-content-displayed`)
+3.  [Primary action available](docs/progressive_enhancement_phases.md#ux3-primary-action-available) (`ux-primary-action-available`)
+4.  [Secondary content displayed](docs/progressive_enhancement_phases.md#ux4-secondary-content--action) (`ux-secondary-content-displayed`)
 
 Each phase's component or element metrics (marks) can be combined and recorded as UserTiming API's measures:
 
@@ -227,24 +229,17 @@ WebPageTest or [Chrome Developer Tools' Timeline tab](https://twitter.com/igrigo
 
 ## Testing results
 
-To confirm that your instrumentation was successful, open your page in Chrome
-Developer Tools Performance tab and hit reload to capture the timeline.
+To confirm that your instrumentation was successful, profile your page in Chrome
+Developer Tools Performance tab.
 
-Verify that individual marks are captured as timestamps on the timeline (small
-vertical lines on Frames band), hovering over each should show the name used
-for the mark.
+Verify that individual marks are captured at correct times and measures properly represent zone/phase completion.
 
-Also verify that measures are captured (long horizontal bars under User Timing
-band, starting at navigation and ending at the last mark comprizing the zone).
+See [Testing UX Capture Instrumentation](docs/testing-instrumentation/README.md) for more details.
 
-Note that you might need to zoom in on the timeline to see these marks and
-measures.
-![Chrome DevTools Performance Timeline with marks and measures](docs/basic-results-sample-chromedevtools.png)
+## UX Capture Lifecycle
 
-You can also run W3C Performance Timeline API [`performance.getEntriesByType()`](https://www.w3.org/TR/performance-timeline-2/#extensions-to-the-performance-interface)
-method with `"mark"` and `"measure"` parameters to retrieve marks and measures respectively.
-
-![Chrome DevTools console showing captured performance marks and measures](docs/basic-results-sample-chromedevtools-console.png)
+You can review full lifecycle of user experience, marks, measures and resulting metrics on the following diagram.
+![UX Capture lifecycle diagram](docs/ux-capture-lifecycle.svg)
 
 ## Glossary
 
